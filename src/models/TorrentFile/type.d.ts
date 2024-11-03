@@ -1,5 +1,4 @@
 interface TorrentFile {
-  _id: ObjectId
   name: string
   size: number
   pieces: Piece[]

@@ -2,11 +2,8 @@
 import express, { NextFunction, Request, Response } from 'express'
 import path from 'path'
 import { routes } from './routes'
-import * as dotenv from 'dotenv'
 import cors from 'cors'
 import { connectToDatabase } from './lib/mongoDbClient'
-
-dotenv.config()
 
 const app = express()
 connectToDatabase()

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from 'express'
 import expressAsyncHandler from 'express-async-handler'
 import { createTorrentFile, deleteTorrentFile, readTorrentFileById, updateTorrentFile } from '../../models/TorrentFile'
