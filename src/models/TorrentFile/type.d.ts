@@ -5,9 +5,8 @@ interface TorrentFile {
 }
 
 interface Piece {
-  _id: ObjectId
   index: number
   size: number
   hash: string
-  peerIds: string[]
+  peerIds: ObjectId[]
 }

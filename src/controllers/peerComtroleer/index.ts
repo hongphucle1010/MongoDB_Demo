@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import expressAsyncHandler from 'express-async-handler'
 import { createPeer, deletePeer, readPeerById, updatePeer } from '../../models/Peer'
 import { NextFunction, Request, Response } from 'express'
