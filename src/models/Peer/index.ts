@@ -45,3 +45,24 @@ export async function updatePeer(peerId: ObjectId, updatedPeer: Partial<Peer>) {
 export async function deletePeer(peerId: ObjectId) {
   return mongoDb.collection(PEERS_COLLECTION).deleteOne({ _id: peerId })
 }
+
+export async function upsertPeer(peerData: Peer) {
+  const { pieces, ...peerFields } = peerData // Separate pieces from the rest of the fields
+
+  return mongoDb.collection(PEERS_COLLECTION).updateOne(
+    { _id: peerData._id },
+    {
+      $set: peerFields, // Set all other peer data fields
+      $addToSet: { pieces: { $each: pieces } } // Add only unique pieces
+    },
+    { upsert: true }
+  )
+}
+
+export async function findAvailablePeers(torrentId: ObjectId, peerId: ObjectId) {
+  return mongoDb
+    .collection(PEERS_COLLECTION)
+    .find({ torrentId, _id: { $ne: peerId } })
+    .project({ ip: 1, port: 1, pieces: 1 }) // Only include relevant fields
+    .toArray()
+}

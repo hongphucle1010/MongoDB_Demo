@@ -5,4 +5,5 @@ interface Peer {
   isOnline: boolean
   download: number
   upload: number
+  pieces?: number[]
 }

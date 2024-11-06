@@ -18,7 +18,7 @@ app.get('/test', (req, res) => {
 })
 app.use('/api', routes)
 app.use('/*', (req, res, next) => {
-  res.json({
+  res.status(404).json({
     message: 'Error: Route not found'
   })
 })

@@ -45,3 +45,7 @@ export async function updateTorrentFile(torrentFileId: ObjectId, updatedTorrentF
 export async function deleteTorrentFile(torrentFileId: ObjectId) {
   return mongoDb.collection(TORRENT_FILES_COLLECTION).deleteOne({ _id: torrentFileId })
 }
+
+export async function seedingTorrentFiles(torrentFile: TorrentFile, seederId: ObjectId) {
+  
+}
