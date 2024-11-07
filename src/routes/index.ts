@@ -10,6 +10,7 @@ import {
 import {
   createPeerController,
   deletePeerController,
+  findAvailablePeersController,
   readPeerByIdController,
   updatePeerController
 } from '../controllers/peerComtroleer'
@@ -33,3 +34,4 @@ peersRouter.delete('/:id', deletePeerController)
 
 routes.use('/upload-torrent', uploadTorrentController)
 routes.use('/announce', announceTorrentController)
+routes.use('/find-available-peers/:torrentId', findAvailablePeersController)

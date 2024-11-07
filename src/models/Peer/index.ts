@@ -59,10 +59,17 @@ export async function upsertPeer(peerData: Peer) {
   )
 }
 
-export async function findAvailablePeers(torrentId: ObjectId, peerId: ObjectId) {
+export async function findAvailablePeers(torrentId: ObjectId) {
   return mongoDb
     .collection(PEERS_COLLECTION)
-    .find({ torrentId, _id: { $ne: peerId } })
+    .find({ torrentId })
     .project({ ip: 1, port: 1, pieces: 1 }) // Only include relevant fields
     .toArray()
 }
+// export async function findAvailablePeers(torrentId: ObjectId, peerId: ObjectId) {
+//   return mongoDb
+//     .collection(PEERS_COLLECTION)
+//     .find({ torrentId, _id: { $ne: peerId } })
+//     .project({ ip: 1, port: 1, pieces: 1 }) // Only include relevant fields
+//     .toArray()
+// }

@@ -6,4 +6,5 @@ interface Peer {
   download: number
   upload: number
   pieces?: number[]
+  torrentId: ObjectId
 }

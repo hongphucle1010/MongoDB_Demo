@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import expressAsyncHandler from 'express-async-handler'
-import { createPeer, deletePeer, readPeerById, updatePeer } from '../../models/Peer'
+import { createPeer, deletePeer, findAvailablePeers, readPeerById, updatePeer } from '../../models/Peer'
 import { NextFunction, Request, Response } from 'express'
 import { ObjectId } from 'mongodb'
 
@@ -19,3 +19,10 @@ export const updatePeerController = expressAsyncHandler(async (req: Request, res
 export const deletePeerController = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   res.json(await deletePeer(new ObjectId(req.params.id)))
 })
+
+export const findAvailablePeersController = expressAsyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    console.log(req.params)
+    res.json(await findAvailablePeers(new ObjectId(req.params.torrentId)))
+  }
+)

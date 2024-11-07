@@ -75,7 +75,7 @@ export const announceTorrentController = expressAsyncHandler(async (req, res, ne
     await upsertPeer(peerData)
 
     // Find other peers with the same torrentId to suggest to this peer
-    const availablePeers = await findAvailablePeers(torrentId, peerData._id)
+    const availablePeers = await findAvailablePeers(torrentId)
 
     res.status(200).json({
       message: 'Peer announced successfully',
