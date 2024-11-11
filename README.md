@@ -2,11 +2,16 @@
 
 ## Setting up
 
-### Install
+### Clone the repository
 
 ```bash
 git clone https://github.com/hongphucle1010/MongoDB_Demo.git
 cd MongoDB_Demo
+```
+
+### Install
+
+```bash
 npm install
 ```
 
