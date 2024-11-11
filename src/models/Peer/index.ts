@@ -26,7 +26,7 @@ Peer schema:
 */
 
 import { ObjectId } from 'mongodb'
-import { PEERS_COLLECTION } from '../../lib/constant'
+import { PEERS_COLLECTION, TORRENT_FILES_COLLECTION } from '../../lib/constant'
 import mongoDb from '../../lib/mongoDbClient'
 
 // CRUD operations for Peer model
@@ -73,3 +73,132 @@ export async function findAvailablePeers(torrentId: ObjectId) {
 //     .project({ ip: 1, port: 1, pieces: 1 }) // Only include relevant fields
 //     .toArray()
 // }
+
+export async function updatePeerPieces(peerId: ObjectId, pieces: string[]) {
+  return mongoDb.collection(PEERS_COLLECTION).updateOne({ _id: peerId }, { $set: { pieces } })
+}
+
+export async function findPiecesByTorrentId(torrentId: ObjectId) {
+  return mongoDb
+    .collection(TORRENT_FILES_COLLECTION)
+    .findOne({ _id: torrentId })
+    .then((result) => result?.pieces)
+}
+
+export async function calculateQueryTime3(torrentId: ObjectId) {
+  const startTime = process.hrtime()
+  const result = await mongoDb
+    .collection(TORRENT_FILES_COLLECTION)
+    .find({ _id: torrentId })
+    .project({ pieces: 1 })
+    .explain('executionStats')
+  const endTime = process.hrtime(startTime)
+  const executionTime = endTime[0] * 1e3 + endTime[1] / 1e6
+  const executionTimeDbSide = result.executionStats.executionTimeMillis * 1e3
+  return { executionTimeDbSide, executionTime }
+}
+
+export async function findPiecesByTorrentName(torrentName: string) {
+  return mongoDb
+    .collection(TORRENT_FILES_COLLECTION)
+    .find({ name: torrentName })
+    .project({ pieces: 1 })
+    .toArray()
+    .then((result) => result[0].pieces)
+}
+
+export async function calculateQueryTime2(torrentName: string) {
+  const startTime = process.hrtime()
+  const result = await mongoDb
+    .collection(TORRENT_FILES_COLLECTION)
+    .find({ name: torrentName })
+    .project({ pieces: 1 })
+    .explain('executionStats')
+  const endTime = process.hrtime(startTime)
+  const executionTime = endTime[0] * 1e3 + endTime[1] / 1e6
+  const executionTimeDbSide = result.executionStats.executionTimeMillis
+  return { executionTimeDbSide, executionTime }
+}
+
+export async function findPeersWithTorrentId(torrentId: ObjectId) {
+  return await mongoDb
+    .collection(TORRENT_FILES_COLLECTION)
+    .aggregate([
+      {
+        $match: { _id: torrentId }
+      },
+      {
+        $unwind: '$pieces' // Flatten the pieces array for individual access
+      },
+      {
+        $lookup: {
+          from: PEERS_COLLECTION, // Join with peers collection
+          let: { pieceHash: '$pieces.hash' }, // Pass each piece's hash as a variable
+          pipeline: [
+            {
+              $match: {
+                $expr: { $in: ['$$pieceHash', '$hashPieces'] } // Check if the peer has this piece
+              }
+            },
+            {
+              $project: { ip: 1, port: 1, _id: 0 } // Select only relevant peer fields
+            }
+          ],
+          as: 'peersWithPiece'
+        }
+      },
+      {
+        $unwind: '$peersWithPiece' // Flatten results to get individual peers
+      },
+      {
+        $project: {
+          hash: '$pieces.hash',
+          ip: '$peersWithPiece.ip',
+          port: '$peersWithPiece.port'
+        }
+      }
+    ])
+    .toArray()
+}
+
+export async function calculateQueryTime(torrentId: ObjectId) {
+  const result = await mongoDb
+    .collection(TORRENT_FILES_COLLECTION)
+    .aggregate([
+      {
+        $match: { _id: torrentId }
+      },
+      {
+        $unwind: '$pieces' // Flatten the pieces array for individual access
+      },
+      {
+        $lookup: {
+          from: PEERS_COLLECTION, // Join with peers collection
+          let: { pieceHash: '$pieces.hash' }, // Pass each piece's hash as a variable
+          pipeline: [
+            {
+              $match: {
+                $expr: { $in: ['$$pieceHash', '$hashPieces'] } // Check if the peer has this piece
+              }
+            },
+            {
+              $project: { ip: 1, port: 1, _id: 0 } // Select only relevant peer fields
+            }
+          ],
+          as: 'peersWithPiece'
+        }
+      },
+      {
+        $unwind: '$peersWithPiece' // Flatten results to get individual peers
+      },
+      {
+        $project: {
+          hash: '$pieces.hash',
+          ip: '$peersWithPiece.ip',
+          port: '$peersWithPiece.port'
+        }
+      }
+    ])
+    .explain('executionStats')
+  return result.stages[result.stages.length - 1].executionTimeMillisEstimate
+}
