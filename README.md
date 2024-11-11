@@ -5,6 +5,8 @@
 ### Install
 
 ```bash
+git clone https://github.com/hongphucle1010/MongoDB_Demo.git
+cd MongoDB_Demo
 npm install
 ```
 
@@ -15,6 +17,7 @@ npm run dev
 ```
 
 ### The demo code is used to demonstrate
+
 ```typescript
 export async function createTorrentFileDemo() {
   return mongoDb.collection(TORRENT_FILES_COLLECTION).insertOne({
@@ -88,15 +91,19 @@ export async function createTorrentWithLotsOfPieces() {
 ```
 
 ### Get the demo results
+
 ```link
 http://localhost:3000/api/demo-final/run/functionName
 ```
+
 With functionName is the name of the function you want to run. For example:
+
 ```link
 http://localhost:3000/api/demo-final/run/createTorrentFileDemo
 ```
 
 ### Compare the performance of MongoDB and PostgreSQL
+
 ```link
 http://localhost:3000/api/demo-final/compare
 ```
