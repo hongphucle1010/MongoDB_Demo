@@ -77,9 +77,33 @@ demo3Router.use('/find/:torrentId', getPiecesByTorrentIdSqlController)
 demo3Router.use('/findmongo/:torrentId', getPiecesByTorrentIdController)
 
 routes.use('/demo-final', demoFinalRouter)
-demoFinalRouter.use('/run', runDemoController)
+demoFinalRouter.use('/run/:case', runDemoController)
 async function runDemoController(req: express.Request, res: express.Response) {
-  const response = await removeDemoData()
+  const { case: caseParam } = req.params
+  let response = {}
+  switch (caseParam) {
+    case 'createTorrentFileDemo':
+      response = await createTorrentFileDemo()
+      break
+    case 'createPeerDemo':
+      response = await createPeerDemo()
+      break
+    case 'updateHashPiecesDemo':
+      response = await updateHashPiecesDemo()
+      break
+    case 'findPeersWithHashDemo':
+      response = await findPeersWithHashDemo()
+      break
+    case 'getPiecesByTorrentIdDemo':
+      response = await getPiecesByTorrentIdDemo()
+      break
+    case 'removeDemoData':
+      response = await removeDemoData()
+      break
+    default:
+      response = { message: 'Invalid case' }
+      break
+  }
   res.json(response)
 }
 demoFinalRouter.use('/compare', compareDemoController)

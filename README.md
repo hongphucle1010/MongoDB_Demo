@@ -1,8 +1,21 @@
-/* eslint-disable prettier/prettier */
-import { ObjectId } from 'mongodb'
-import { PEERS_COLLECTION, TORRENT_FILES_COLLECTION } from '../../lib/constant'
-import mongoDb from '../../lib/mongoDbClient'
+# MongoDB & PostgreSQL Demo
 
+## Setting up
+
+### Install
+
+```bash
+npm install
+```
+
+### Run
+
+```bash
+npm run dev
+```
+
+### The demo code is used to demonstrate
+```typescript
 export async function createTorrentFileDemo() {
   return mongoDb.collection(TORRENT_FILES_COLLECTION).insertOne({
     _id: new ObjectId('111111111111111111111111'),
@@ -72,3 +85,18 @@ export async function createTorrentWithLotsOfPieces() {
   const executionTime = endTime[0] * 1e3 + endTime[1] / 1e6
   return executionTime
 }
+```
+
+### Get the demo results
+```link
+http://localhost:3000/api/demo-final/run/functionName
+```
+With functionName is the name of the function you want to run. For example:
+```link
+http://localhost:3000/api/demo-final/run/createTorrentFileDemo
+```
+
+### Compare the performance of MongoDB and PostgreSQL
+```link
+http://localhost:3000/api/demo-final/compare
+```
